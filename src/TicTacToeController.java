@@ -64,8 +64,12 @@ public class TicTacToeController {
         this.serverClient = serverClient;
     }
 
+    public void openWaiting() {
+        view.showWaitingPanel();
+    }
+
     public void openLogin() {
-        view.showLogin();
+        view.showLoginPanel();
         while(model.getMyPlayer() == null || model.getMyPlayer().equals(null)) {
             try {
                 Thread.sleep(100);
@@ -100,6 +104,10 @@ public class TicTacToeController {
         }
     }
 
+    public void sentLogin(String playerName) {
+        serverClient.sendLogin(playerName);
+    }
+
     /**
      * Updates the game board with the player's move.
      * @param x The x-coordinate of the move.
@@ -119,8 +127,8 @@ public class TicTacToeController {
         // Zobrazit výsledek hry
     }
 
-    public void setMyPlayer(String name, String serverAdress, int port) {
-        this.model.setMyPlayer(new Player(name, serverAdress, port));
+    public void setMyPlayer(String name, char playerChar) {
+        this.model.setMyPlayer(new Player(name, playerChar));
     }
 
     public void showErrorMessage(String message) {

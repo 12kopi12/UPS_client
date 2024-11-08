@@ -1,37 +1,30 @@
 public class Player {
-    private String serverAddress;
     private String name;
-//    private char playerChar;
-    private int port;
+    char playerChar;
 
-    public Player (String name, String serverAddress, int port) {
+    public Player (String name) {
         this.name = name;
-        this.serverAddress = serverAddress;
-        this.port = port;
+    }
+
+    public Player (String name, char playerChar) {
+        this.name = name;
+        this.playerChar = playerChar;
     }
 
     public String getName() {
         return this.name;
     }
 
-    public int getPort() {
-        return this.port;
-    }
-
-    public String getServerAddress() {
-        return this.serverAddress;
-    }
-
-    public void setServerAddress(String serverAddress) {
-        this.serverAddress = serverAddress;
+    public char getPlayerChar() {
+        return this.playerChar;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setPlayerChar(char playerChar) {
+        this.playerChar = playerChar;
     }
 
 //    public char getPlayerChar() {

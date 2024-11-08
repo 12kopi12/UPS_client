@@ -16,23 +16,24 @@ public class ServerClient {
             this.controller = controller;
 
 //        out.println("LOGIN;Myname              \n");
-            out.println("TIC-TAC-TOE;INIT\n");
+//            out.println("TIC-TAC-TOE;INIT\n");
 
-            // if server response is not "TIC-TAC-TOE;INIT;OK" then show error message and close the connection
-            String response = in.readLine();
-            if (!response.equals("TIC-TAC-TOE;INIT;OK")) {
-                System.out.println("Error: connecting to server");
-                controller.showErrorMessage("Unable to connect to the server");
-                socket.close();
-                return;
-            } else {
-                System.out.println("INIT OK: Connected to server on port " + port);
-            }
+//            // if server response is not "TIC-TAC-TOE;INIT;OK" then show error message and close the connection
+//            String response = in.readLine();
+//            if (!response.equals("TIC-TAC-TOE;INIT;OK")) {
+//                System.out.println("Error: connecting to server");
+//                controller.showErrorMessage("Unable to connect to the server");
+//                socket.close();
+//                return;
+//            } else {
+//                System.out.println("INIT OK: Connected to server on port " + port);
+//            }
 
             new Thread(this::listenToServer).start();
         } catch (IOException e) {
             System.err.println("Error: connecting to server");
-            controller.showErrorMessage("Unable to connect to the server");
+            throw e;
+//            controller.showErrorMessage("Unable to connect to the server");
         }
     }
 
@@ -43,6 +44,11 @@ public class ServerClient {
     // Odeslání tahu na server
     public void sendMove(int x, int y) {
         System.out.println("MOVE " + x + " " + y);
+    }
+
+    public void sendLogin(String name) {
+        System.out.println("LOGIN len = " + name.length());
+        out.println("LOGIN;" + name + " \n");
     }
 
     // Poslouchání zpráv od serveru
@@ -70,18 +76,16 @@ public class ServerClient {
         switch (parts[0]) {
 
             case "LOGIN": {
-                if (parts[1].equals("OK")) {
-                    System.out.println("Prijato: LOGIN_OK");
-                } else {
-                    System.out.println("Prijato: LOGIN_FAIL");
-                }
+                System.out.println("Prijato: LOGIN_OK");
+                controller.getModel().setMyPlayer(new Player(parts[1], parts[2].charAt(0)));
+                controller.openWaiting();
                 break;
             }
-            case "GAME_STARTED": {
+            case "START_GAME": {
                 // todo mozna bude fajn predavat metode updateBoard i boolean myTurn (true pokud je muj tah)
                 System.out.println("Prijato: GAME_STARTED");
-                controller.getModel().setOpponentPlayer(parts[1]);
-                controller.setMyTurn(controller.getModel().getMyPlayer().getName().compareTo(parts[2]) == 0);
+//                controller.getModel().setOpponentPlayer(parts[1], parts[2].charAt(0));
+//                controller.setMyTurn(controller.getModel().getMyPlayer().getName().compareTo(parts[3]) == 0);
                 controller.newGame();
                 break;
             }

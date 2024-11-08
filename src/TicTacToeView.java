@@ -23,6 +23,11 @@ public class TicTacToeView extends JFrame {
     private JPanel loginPanel;
 
     /**
+     * JPanel for waiting for the opponent
+     */
+    private JPanel waitingPanel;
+
+    /**
      * JPanel for the game
      */
     private JPanel gamePanel;
@@ -48,69 +53,25 @@ public class TicTacToeView extends JFrame {
         setVisible(true);  // Zviditelnění okna
     }
 
-    public void showLogin() {
-        loginPanel = new JPanel();
-        loginPanel.setLayout(new GridLayout(4, 2, 10, 10));  // Mřížka 4x2 pro formulář přihlášení
-
-        // Formulářová pole
-        loginPanel.add(new JLabel("Name:"));
-        nameField = new JTextField("Eli");
-        loginPanel.add(nameField);
-
-        loginPanel.add(new JLabel("Server Address:"));
-        serverField = new JTextField("MOje");
-        loginPanel.add(serverField);
-
-        loginPanel.add(new JLabel("Port:"));
-        portField = new JTextField("123");
-        loginPanel.add(portField);
-
-        Player myPlayer;
-
-        JButton connectButton = new JButton("Connect");
-        connectButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                 if (validateLogin()) {
-                     controller.setMyPlayer(nameField.getText(), serverField.getText(), Integer.parseInt(portField.getText()));
-                     System.out.println("REGISTROVAN");
-                }
-            }
-        });
-
-        loginPanel.add(connectButton);
-        add(loginPanel, BorderLayout.CENTER);
-        setVisible(true);
+    public JPanel getGamePanel() {
+        return gamePanel;
     }
 
-    /**
-     * Handles the login of the player.
-     */
-    private boolean validateLogin() {
-        String name = nameField.getText();
-        String serverAddress = serverField.getText();
-        String port = portField.getText();
+    public JPanel getLoginPanel() {
+        return loginPanel;
+    }
 
-        if (name.isEmpty() || serverAddress.isEmpty() || port.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill all fields!", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        try {
-            Integer.parseInt(port);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Port must be a number!", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-//        controller.getModel().setMyPlayer(new Player(name, serverAddress, Integer.parseInt(port)));
-        return true;
+    public JPanel getWaitingPanel() {
+        return waitingPanel;
     }
 
     /**
      * Initializes the game board.
      */
     public void initializeBoard() {
-        remove(loginPanel);  // Odstranění formuláře přihlášení
+        if (waitingPanel != null) {
+            remove(waitingPanel);  // Odstranění formuláře přihlášení
+        }
         gamePanel = new JPanel();
         for (int i = 0; i < Main.TIC_TAC_TOE_SIZE; i++) {
             for (int j = 0; j < Main.TIC_TAC_TOE_SIZE; j++) {
@@ -132,6 +93,100 @@ public class TicTacToeView extends JFrame {
             }
         }
         setVisible(true);  // Show the game board
+    }
+
+    /**
+     * Resets the game board.
+     */
+    public void resetBoard() {
+        for (int i = 0; i < buttons.length; i++) {
+            for (int j = 0; j < buttons[i].length; j++) {
+                buttons[i][j].setText(" ");  // Vymazání textu (X nebo O)
+                buttons[i][j].setEnabled(true);  // Opětovné povolení tlačítka
+            }
+        }
+        repaint();
+    }
+
+    /**
+     * Sets the controller for the game.
+     * @param controller The controller for the game.
+     */
+    public void setController(TicTacToeController controller) {
+        this.controller = controller;
+    }
+
+    /**
+     * Shows the login form.
+     */
+    public void showLoginPanel() {
+        loginPanel = new JPanel();
+        loginPanel.setLayout(new GridLayout(4, 2, 10, 10));  // Mřížka 4x2 pro formulář přihlášení
+
+        // Formulářová pole
+        loginPanel.add(new JLabel("Name:"));
+        nameField = new JTextField("Eliska");
+        loginPanel.add(nameField);
+
+        loginPanel.add(new JLabel("Server Address:"));
+        serverField = new JTextField("localhost");
+        loginPanel.add(serverField);
+
+        loginPanel.add(new JLabel("Port:"));
+        portField = new JTextField("10000");
+        loginPanel.add(portField);
+
+        JButton connectButton = new JButton("Connect");
+        connectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (validateLogin()) {
+                    try {
+                        controller.setServerClient(new ServerClient(serverField.getText(), Integer.parseInt(portField.getText()), controller));
+                        controller.sentLogin(nameField.getText() + "\n");
+                    } catch (Exception ex) {
+                        showInfoMessage("Error: connecting to server failed - try again (check IP address and port)");
+                    }
+                }
+            }
+        });
+
+        loginPanel.add(connectButton);
+        add(loginPanel, BorderLayout.CENTER);
+        setVisible(true);
+    }
+
+    /**
+     * Shows the waiting panel.
+     */
+    public void showWaitingPanel() {
+        if (loginPanel != null) {
+            remove(loginPanel);
+        }
+
+        waitingPanel = new JPanel();
+        waitingPanel.setLayout(new GridLayout(2, 1, 10, 10));
+        waitingPanel.add(new JLabel("Waiting for the opponent..."));
+        add(waitingPanel, BorderLayout.CENTER);
+        setVisible(true);
+    }
+
+    /**
+     * Shows the result of the game.
+     * @param result The result of the game.
+     */
+    public void showGameResult(String result) {
+        JOptionPane.showMessageDialog(this, result, "Výsledek hry", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+        // close application
+        System.exit(0);
+    }
+
+    public void showInfoMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Info", JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
@@ -173,38 +228,35 @@ public class TicTacToeView extends JFrame {
 //    }
 
     /**
-     * Sets the controller for the game.
-     * @param controller The controller for the game.
+     * Handles the login of the player.
      */
-    public void setController(TicTacToeController controller) {
-        this.controller = controller;
-    }
+    private boolean validateLogin() {
+        String name = nameField.getText();
+        String serverAddress = serverField.getText();
+        String port = portField.getText();
 
-    /**
-     * Shows the result of the game.
-     * @param result The result of the game.
-     */
-    public void showGameResult(String result) {
-        JOptionPane.showMessageDialog(this, result, "Výsledek hry", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    /**
-     * Resets the game board.
-     */
-    public void resetBoard() {
-        for (int i = 0; i < buttons.length; i++) {
-            for (int j = 0; j < buttons[i].length; j++) {
-                buttons[i][j].setText(" ");  // Vymazání textu (X nebo O)
-                buttons[i][j].setEnabled(true);  // Opětovné povolení tlačítka
-            }
+        if (name.isEmpty() || serverAddress.isEmpty() || port.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill all fields!", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
-        repaint();
-    }
 
-    public void showErrorMessage(String message) {
-        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
-        // close application
-        System.exit(0);
+        try {
+            Integer.parseInt(port);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Port must be a number!", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (name.length() > Constants.PLAYER_NAME_LENGTH) {
+            JOptionPane.showMessageDialog(this, "Name is too long!", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        while (nameField.getText().length() < Constants.PLAYER_NAME_LENGTH) {
+            nameField.setText(nameField.getText() + " ");
+        }
+//        controller.getModel().setMyPlayer(new Player(name, serverAddress, Integer.parseInt(port)));
+        return true;
     }
 
 //    public static void main(String[] args) {

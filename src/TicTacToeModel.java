@@ -94,8 +94,8 @@ public class TicTacToeModel {
      * Sets the opponent player.
      * @param opponentName The opponent player.
      */
-    public void setOpponentPlayer(String opponentName) {
-        this.opponentPlayer = new Player(opponentName, myPlayer.getServerAddress(), myPlayer.getPort());
+    public void setOpponentPlayer(String opponentName, char playerChar) {
+        this.opponentPlayer = new Player(opponentName, playerChar);
     }
 
     /**
