@@ -9,16 +9,31 @@ public class ServerClient {
     private TicTacToeController controller;
 
     public ServerClient(String serverAddress, int port, TicTacToeController controller) throws IOException {
-        socket = new Socket(serverAddress, port);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
-        this.controller = controller;
+        try {
+            socket = new Socket(serverAddress, port);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            this.controller = controller;
 
-        out.println("LOGIN;Myname              \n");
-//        out.println("TIC-TAC-TOE;INIT\n");
-//
-//        // Nové vlákno pro příjem zpráv ze serveru
-        new Thread(this::listenToServer).start();
+//        out.println("LOGIN;Myname              \n");
+            out.println("TIC-TAC-TOE;INIT\n");
+
+            // if server response is not "TIC-TAC-TOE;INIT;OK" then show error message and close the connection
+            String response = in.readLine();
+            if (!response.equals("TIC-TAC-TOE;INIT;OK")) {
+                System.out.println("Error: connecting to server");
+                controller.showErrorMessage("Unable to connect to the server");
+                socket.close();
+                return;
+            } else {
+                System.out.println("INIT OK: Connected to server on port " + port);
+            }
+
+            new Thread(this::listenToServer).start();
+        } catch (IOException e) {
+            System.err.println("Error: connecting to server");
+            controller.showErrorMessage("Unable to connect to the server");
+        }
     }
 
     public void setController(TicTacToeController controller) {
@@ -53,6 +68,7 @@ public class ServerClient {
     private void considerResponse(String response) {
         String[] parts = response.split(";");
         switch (parts[0]) {
+
             case "LOGIN": {
                 if (parts[1].equals("OK")) {
                     System.out.println("Prijato: LOGIN_OK");

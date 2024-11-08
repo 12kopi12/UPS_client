@@ -201,6 +201,12 @@ public class TicTacToeView extends JFrame {
         repaint();
     }
 
+    public void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+        // close application
+        System.exit(0);
+    }
+
 //    public static void main(String[] args) {
 //        // Pouze pro účely testování UI bez napojení na controller
 //        SwingUtilities.invokeLater(new Runnable() {

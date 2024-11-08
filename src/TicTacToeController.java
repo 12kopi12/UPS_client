@@ -123,6 +123,10 @@ public class TicTacToeController {
         this.model.setMyPlayer(new Player(name, serverAdress, port));
     }
 
+    public void showErrorMessage(String message) {
+        view.showErrorMessage(message);
+    }
+
 //    public void setMyPlayer(Player player) {
 //        this.myPlayer = player;
 //    }
