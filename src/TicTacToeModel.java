@@ -5,7 +5,7 @@ public class TicTacToeModel {
     /**
      * The game board.
      */
-    private char[][] board;
+    private final char[][] board;
 
     /**
      * The player on this PC.

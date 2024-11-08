@@ -10,7 +10,7 @@ public class TicTacToeView extends JFrame {
     /**
      * Array of buttons for the game board.
      */
-    private JButton[][] buttons = new JButton[Main.TIC_TAC_TOE_SIZE][Main.TIC_TAC_TOE_SIZE];
+    private final JButton[][] buttons = new JButton[Main.TIC_TAC_TOE_SIZE][Main.TIC_TAC_TOE_SIZE];
 
     /**
      * The controller for the game.

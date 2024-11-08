@@ -3,15 +3,15 @@
  */
 public class TicTacToeController {
     /** The model of the game. */
-    private TicTacToeModel model;
+    private final TicTacToeModel model;
 
     /** Class for Graphical User Interface. */
-    private TicTacToeView view;
+    private final TicTacToeView view;
 
     /** The client for communication with the server.*/
     private ServerClient serverClient;
 
-    private LastMove lastMove = new LastMove();
+    private final LastMove lastMove = new LastMove();
 
     private boolean myTurn = false;
 

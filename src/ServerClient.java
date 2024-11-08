@@ -8,13 +8,17 @@ public class ServerClient {
     private PrintWriter out;
     private TicTacToeController controller;
 
-    public ServerClient(String serverAddress, int port) throws IOException {
-//        socket = new Socket(serverAddress, port);
-//        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//        out = new PrintWriter(socket.getOutputStream(), true);
+    public ServerClient(String serverAddress, int port, TicTacToeController controller) throws IOException {
+        socket = new Socket(serverAddress, port);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new PrintWriter(socket.getOutputStream(), true);
+        this.controller = controller;
+
+        out.println("LOGIN;Myname              \n");
+//        out.println("TIC-TAC-TOE;INIT\n");
 //
 //        // Nové vlákno pro příjem zpráv ze serveru
-//        new Thread(this::listenToServer).start();
+        new Thread(this::listenToServer).start();
     }
 
     public void setController(TicTacToeController controller) {
@@ -28,41 +32,40 @@ public class ServerClient {
 
     // Poslouchání zpráv od serveru
     public void listenToServer() {
-        System.out.println("cekam na server...");
-        Scanner sc = new Scanner(System.in);
-        String response;
-
-        while ((response = sc.nextLine()) != null) {
-            // Zpracování zprávy od serveru
-            considerResponse(response);
-        }
+//        System.out.println("cekam na server...");
+//        Scanner sc = new Scanner(System.in);
 //        String response;
-//        try {
-//            while ((response = in.readLine()) != null) {
-//                // Zpracování zprávy od serveru
-//                String[] parts = response.split(" ");
-//                if (parts[0].equals("MOVE_OK")) {
-//                    int x = Integer.parseInt(parts[1]);
-//                    int y = Integer.parseInt(parts[2]);
-//                    char player = parts[3].charAt(0);
-//                    controller.updateFromServer(x, y, player);
-//                } else if (parts[0].equals("WIN") || parts[0].equals("DRAW")) {
-//                    controller.endGame(parts[0]);
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
+//
+//        while ((response = sc.nextLine()) != null) {
+//            // Zpracování zprávy od serveru
+//            considerResponse(response);
 //        }
+        String response;
+        try {
+            while ((response = in.readLine()) != null) {
+                considerResponse(response);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void considerResponse(String response) {
-        String[] parts = response.split(" ");
+        String[] parts = response.split(";");
         switch (parts[0]) {
+            case "LOGIN": {
+                if (parts[1].equals("OK")) {
+                    System.out.println("Prijato: LOGIN_OK");
+                } else {
+                    System.out.println("Prijato: LOGIN_FAIL");
+                }
+                break;
+            }
             case "GAME_STARTED": {
                 // todo mozna bude fajn predavat metode updateBoard i boolean myTurn (true pokud je muj tah)
                 System.out.println("Prijato: GAME_STARTED");
                 controller.getModel().setOpponentPlayer(parts[1]);
-                controller.setMyTurn(controller.getModel().getMyPlayer().getName().compareTo(parts[2]) < 0);
+                controller.setMyTurn(controller.getModel().getMyPlayer().getName().compareTo(parts[2]) == 0);
                 controller.newGame();
                 break;
             }

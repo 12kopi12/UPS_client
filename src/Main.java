@@ -10,8 +10,7 @@ public class Main {
 
         TicTacToeController controller1 = new TicTacToeController();
         try {
-            ServerClient client = new ServerClient("localhost", 1234);
-            client.setController(controller1);
+            ServerClient client = new ServerClient("localhost", 10000, controller1);
             controller1.setServerClient(client);
             controller1.openLogin();
             client.listenToServer();
