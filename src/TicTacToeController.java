@@ -11,7 +11,11 @@ public class TicTacToeController {
     /** The client for communication with the server.*/
     private ServerClient serverClient;
 
-    private final LastMove lastMove = new LastMove();
+//    /**
+//     * The last move of the player.
+//     */
+//    private final LastMove lastMove = new LastMove();
+
 
     private boolean myTurn = false;
 
@@ -41,16 +45,16 @@ public class TicTacToeController {
         return myTurn;
     }
 
-    public void updateBoard(){
-        model.updateBoard(lastMove.getX(),lastMove.getY(), lastMove.getLastPlayer());
-        view.updateBoard(model, myTurn);
-    }
+//    public void updateBoard(){
+//        model.updateBoard(lastMove.getX(),lastMove.getY(), lastMove.getLastPlayer());
+//        view.updateBoard(model, myTurn);
+//    }
 
-    public void setLastMove(Player player, int x, int y) {
-        this.lastMove.setLastPlayer(player);
-        this.lastMove.setX(x);
-        this.lastMove.setY(y);
-    }
+//    public void setLastMove(Player player, int x, int y) {
+//        this.lastMove.setLastPlayer(player);
+//        this.lastMove.setX(x);
+//        this.lastMove.setY(y);
+//    }
 
     /**
      * Getter for the model.
@@ -79,6 +83,9 @@ public class TicTacToeController {
         }
     }
 
+    /**
+     * Starts a new game.
+     */
     public void newGame() {
         view.initializeBoard();
         model.resetBoard();
@@ -112,13 +119,16 @@ public class TicTacToeController {
      * Updates the game board with the player's move.
      * @param x The x-coordinate of the move.
      * @param y The y-coordinate of the move.
-     * @param playerName The player's name.
+     * @param player The player's name.
      */
-    public void updateBoard(int x, int y, String playerName) {
-        Player player = playerName.equals(model.getMyPlayer().getName()) ? model.getMyPlayer() : model.getOpponentPlayer();
+    public void updateBoard(int x, int y, Player player) {
 //        char playerChar = playerName.equals(model.getMyPlayer().getName()) ? TicTacToeModel.MY_CHAR : TicTacToeModel.OPONENT_CHAR;
-        model.updateBoard(x, y, player);
+        model.updateBoard(x, y, player.getPlayerChar());
         view.updateBoard(model, myTurn);
+    }
+
+    public void updateHeader() {
+        view.updateHeader();
     }
 
 

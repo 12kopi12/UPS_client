@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
 
 public class ServerClient {
     private Socket socket;
@@ -43,12 +42,14 @@ public class ServerClient {
 
     // Odeslání tahu na server
     public void sendMove(int x, int y) {
-        System.out.println("MOVE " + x + " " + y);
+        System.out.println("Sending: MOVE;" + x + ";" + y + "\n");
+        out.println("MOVE;" + x + ";" + y + "\n");
     }
 
     public void sendLogin(String name) {
         System.out.println("LOGIN len = " + name.length());
-        out.println("LOGIN;" + name + " \n");
+        System.out.println("Sending: LOGIN;" + name + "\n");
+        out.println("LOGIN;" + name + "\n");
     }
 
     // Poslouchání zpráv od serveru
@@ -72,9 +73,9 @@ public class ServerClient {
     }
 
     private void considerResponse(String response) {
+        System.out.println("Prijato: " + response);
         String[] parts = response.split(";");
         switch (parts[0]) {
-
             case "LOGIN": {
                 System.out.println("Prijato: LOGIN_OK");
                 controller.getModel().setMyPlayer(new Player(parts[1], parts[2].charAt(0)));
@@ -82,25 +83,31 @@ public class ServerClient {
                 break;
             }
             case "START_GAME": {
-                // todo mozna bude fajn predavat metode updateBoard i boolean myTurn (true pokud je muj tah)
                 System.out.println("Prijato: GAME_STARTED");
-//                controller.getModel().setOpponentPlayer(parts[1], parts[2].charAt(0));
-//                controller.setMyTurn(controller.getModel().getMyPlayer().getName().compareTo(parts[3]) == 0);
+                controller.getModel().setOpponentPlayer(parts[1], parts[2].charAt(0));
+                controller.setMyTurn(parts[3].charAt(0) == '1');
                 controller.newGame();
                 break;
             }
-            case "MOVE_OK": {
-                System.out.println("Prijato: MOVE_OK");
-                controller.setMyTurn(false);
-                controller.updateBoard();
+            case "MOVE": {
+                System.out.println("Prijato: MOVE");
+                int status = Integer.parseInt(parts[1]);
+                if (Constants.MOVE_BAD_STATUS.contains(status)) {
+                    System.out.println("Neplatny tah: " + status);
+                    return;
+                } else {
+                    controller.setMyTurn(false);
+                    controller.updateBoard(Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), controller.getModel().getMyPlayer());
+                    controller.updateHeader();
+                }
                 break;
             }
             case "OPP_MOVE": {
                 int x = Integer.parseInt(parts[1]);
                 int y = Integer.parseInt(parts[2]);
-                String playerName = parts[3];
                 controller.setMyTurn(true);
-                controller.updateBoard(x, y, playerName);
+                controller.updateBoard(x, y, controller.getModel().getOpponentPlayer());
+                controller.updateHeader();
                 controller.myTurn();
                 break;
             }

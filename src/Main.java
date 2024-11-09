@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static final int TIC_TAC_TOE_SIZE = 5;
     public static Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
         // todo 1. controller -> volá newGame

@@ -10,7 +10,7 @@ public class TicTacToeView extends JFrame {
     /**
      * Array of buttons for the game board.
      */
-    private final JButton[][] buttons = new JButton[Main.TIC_TAC_TOE_SIZE][Main.TIC_TAC_TOE_SIZE];
+    private final JButton[][] buttons = new JButton[Constants.TIC_TAC_TOE_SIZE][Constants.TIC_TAC_TOE_SIZE];
 
     /**
      * The controller for the game.
@@ -32,6 +32,11 @@ public class TicTacToeView extends JFrame {
      */
     private JPanel gamePanel;
 
+    /**
+     * JPanel for the header
+     */
+    private JPanel headerPanel;
+
     private JTextField nameField, serverField, portField;
 
     public boolean buttonClicked = false;
@@ -46,7 +51,7 @@ public class TicTacToeView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setSize(800, 800);
-        setLayout(new GridLayout(Main.TIC_TAC_TOE_SIZE, Main.TIC_TAC_TOE_SIZE));  // Mřížka 5x5 pro herní desku
+        setLayout(new GridLayout(Constants.TIC_TAC_TOE_SIZE, Constants.TIC_TAC_TOE_SIZE));  // Mřížka 5x5 pro herní desku
 
 //        showLogin();  // Vytvoření tlačítek na hrací ploše
 
@@ -70,11 +75,18 @@ public class TicTacToeView extends JFrame {
      */
     public void initializeBoard() {
         if (waitingPanel != null) {
-            remove(waitingPanel);  // Odstranění formuláře přihlášení
+            remove(waitingPanel);
+            waitingPanel = null;
         }
+        setLayout(new BorderLayout());
+
+        updateHeader();
+
         gamePanel = new JPanel();
-        for (int i = 0; i < Main.TIC_TAC_TOE_SIZE; i++) {
-            for (int j = 0; j < Main.TIC_TAC_TOE_SIZE; j++) {
+        // show game board
+        gamePanel.setLayout(new GridLayout(Constants.TIC_TAC_TOE_SIZE, Constants.TIC_TAC_TOE_SIZE));  // Mřížka 5x5 pro herní desku
+        for (int i = 0; i < Constants.TIC_TAC_TOE_SIZE; i++) {
+            for (int j = 0; j < Constants.TIC_TAC_TOE_SIZE; j++) {
                 buttons[i][j] = new JButton();  // all buttons are empty at the beginning
                 buttons[i][j].setFont(new Font("Arial", Font.PLAIN, 60));
                 final int x = j;
@@ -84,14 +96,15 @@ public class TicTacToeView extends JFrame {
                 buttons[i][j].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        controller.setLastMove(controller.getModel().getMyPlayer(), x, y);
-                        controller.sentPlayerMove(x, y);  // Handle the player's move
+//                        controller.setLastMove(controller.getModel().getMyPlayer(), x, y);
+                        controller.sentPlayerMove(x, y);
                         buttonClicked = true;
                     }
                 });
-                add(buttons[i][j]);  // Add the button to the frame
+                gamePanel.add(buttons[i][j]);  // Add the button to the frame
             }
         }
+        add(gamePanel, BorderLayout.CENTER);
         setVisible(true);  // Show the game board
     }
 
@@ -143,7 +156,7 @@ public class TicTacToeView extends JFrame {
                 if (validateLogin()) {
                     try {
                         controller.setServerClient(new ServerClient(serverField.getText(), Integer.parseInt(portField.getText()), controller));
-                        controller.sentLogin(nameField.getText() + "\n");
+                        controller.sentLogin(nameField.getText());
                     } catch (Exception ex) {
                         showInfoMessage("Error: connecting to server failed - try again (check IP address and port)");
                     }
@@ -163,10 +176,10 @@ public class TicTacToeView extends JFrame {
         if (loginPanel != null) {
             remove(loginPanel);
         }
+        setLayout(new BorderLayout());
 
-        waitingPanel = new JPanel();
-        waitingPanel.setLayout(new GridLayout(2, 1, 10, 10));
-        waitingPanel.add(new JLabel("Waiting for the opponent..."));
+        waitingPanel = new JPanel(new BorderLayout());
+        waitingPanel.add(new JLabel("Waiting for the opponent...", SwingConstants.CENTER), BorderLayout.CENTER);
         add(waitingPanel, BorderLayout.CENTER);
         setVisible(true);
     }
@@ -206,6 +219,42 @@ public class TicTacToeView extends JFrame {
         }
         gamePanel.revalidate();
         gamePanel.repaint();
+    }
+
+    public void updateHeader() {
+        if (headerPanel != null) {
+            remove(headerPanel);
+        }
+
+        headerPanel = new JPanel(new GridLayout(2, 3));
+
+        JLabel header1 = new JLabel("PLAYER", SwingConstants.CENTER);
+        header1.setFont(new Font("Arial", Font.BOLD, 20));
+        headerPanel.add(header1);
+
+        JLabel header2 = new JLabel("CURRENT_PLAYER", SwingConstants.CENTER);
+        header2.setFont(new Font("Arial", Font.BOLD, 20));
+        headerPanel.add(header2);
+
+        JLabel header3 = new JLabel("OPPONENT", SwingConstants.CENTER);
+        header3.setFont(new Font("Arial", Font.BOLD, 20));
+        headerPanel.add(header3);
+
+        // show header (names of the players)
+        JLabel player1 = new JLabel(controller.getModel().getMyPlayer().getName().trim(), SwingConstants.CENTER);
+        player1.setFont(new Font("Arial", Font.PLAIN, 20));
+        headerPanel.add(player1);
+
+        JLabel currentPlayer = new JLabel(controller.getMyTurn() ? controller.getModel().getMyPlayer().getName().trim() : controller.getModel().getOpponentPlayer().getName().trim(), SwingConstants.CENTER);
+        currentPlayer.setFont(new Font("Arial", Font.PLAIN, 20));
+        headerPanel.add(currentPlayer);
+
+        JLabel player2 = new JLabel(controller.getModel().getOpponentPlayer().getName().trim(), SwingConstants.CENTER);
+        player2.setFont(new Font("Arial", Font.PLAIN, 20));
+        headerPanel.add(player2);
+
+        add(headerPanel, BorderLayout.NORTH);
+        setVisible(true);
     }
 //        char[][] board = model.getBoard();
 //        for (int i = 0; i < buttons.length; i++) {
@@ -254,6 +303,7 @@ public class TicTacToeView extends JFrame {
 
         while (nameField.getText().length() < Constants.PLAYER_NAME_LENGTH) {
             nameField.setText(nameField.getText() + " ");
+            System.out.println("Doplnuji mezery");
         }
 //        controller.getModel().setMyPlayer(new Player(name, serverAddress, Integer.parseInt(port)));
         return true;

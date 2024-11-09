@@ -36,7 +36,7 @@ public class TicTacToeModel {
      * Constructor of the TicTacToeModel class.
      */
     public TicTacToeModel() {
-        this.board = new char[Main.TIC_TAC_TOE_SIZE][Main.TIC_TAC_TOE_SIZE];
+        this.board = new char[Constants.TIC_TAC_TOE_SIZE][Constants.TIC_TAC_TOE_SIZE];
         resetBoard();
     }
 
@@ -56,11 +56,11 @@ public class TicTacToeModel {
      * Updates the game board with the player's move.
      * @param x The x-coordinate of the move.
      * @param y The y-coordinate of the move.
-     * @param player The player's character.
+     * @param player_char The player's character.
      */
-    public void updateBoard(int x, int y, Player player) {
+    public void updateBoard(int x, int y, char player_char) {
         if (board[y][x] == ' ') {
-            board[y][x] = player.getName().equals(myPlayer.getName()) ? MY_CHAR : OPONENT_CHAR;
+            board[y][x] = player_char;
         }
     }
 
