@@ -104,6 +104,16 @@ public class TicTacToeView extends JFrame {
                 gamePanel.add(buttons[i][j]);  // Add the button to the frame
             }
         }
+
+//        JButton someButton = new JButton("BAD_BUTTON");
+//        someButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                controller.sentPlayerMove(-1, -2);
+//            }
+//        });
+//        gamePanel.add(someButton);
+
         add(gamePanel, BorderLayout.CENTER);
         setVisible(true);  // Show the game board
     }
@@ -189,7 +199,8 @@ public class TicTacToeView extends JFrame {
      * @param result The result of the game.
      */
     public void showGameResult(String result) {
-        JOptionPane.showMessageDialog(this, result, "Výsledek hry", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(gamePanel, result, "GAME RESULT", JOptionPane.INFORMATION_MESSAGE);
+        gamePanel.repaint();
     }
 
     public void showErrorMessage(String message) {

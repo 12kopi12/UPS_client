@@ -104,15 +104,19 @@ public class TicTacToeController {
     }
 
     public void sentPlayerMove(int x, int y) {
-        if (model.getCell(x, y) == ' ' && !model.isGameOver()) {
+//        if (model.getCell(x, y) == ' ' && !model.isGameOver()) {
             // Odeslání tahu na server
             serverClient.sendMove(x, y);
 //            serverClient.listenToServer();
-        }
+//        }
     }
 
     public void sentLogin(String playerName) {
         serverClient.sendLogin(playerName);
+    }
+
+    public void showResult(String result) {
+        view.showGameResult(result);
     }
 
     /**

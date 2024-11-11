@@ -71,7 +71,7 @@ public class TicTacToeModel {
      * @return The character at the specified position.
      */
     public char getCell(int x, int y) {
-        return board[x][y];
+        return board[y][x];
     }
 
     /**

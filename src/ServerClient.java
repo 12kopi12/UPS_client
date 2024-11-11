@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 import java.net.*;
 
@@ -76,6 +77,17 @@ public class ServerClient {
         System.out.println("Prijato: " + response);
         String[] parts = response.split(";");
         switch (parts[0]) {
+            case "GAME_STATUS": {
+                System.out.println("Prijato: GAME_STATUS");
+                SwingUtilities.invokeLater(() -> {
+                    if (parts[1].equals(Constants.GAME_STATUS_DRAW)) {
+                        controller.showResult("DRAW");
+                    } else {
+                        controller.showResult(parts[1].equals(controller.getModel().getMyPlayer().getName()) ? "YOU WIN!!!" : "YOU LOSE...");
+                    }
+                });
+                break;
+            }
             case "LOGIN": {
                 System.out.println("Prijato: LOGIN_OK");
                 controller.getModel().setMyPlayer(new Player(parts[1], parts[2].charAt(0)));
