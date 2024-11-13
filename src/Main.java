@@ -9,7 +9,9 @@ public class Main {
 //        try {
 //            ServerClient client = new ServerClient("localhost", 10000, controller1);
 //            controller1.setServerClient(client);
-            controller1.openLogin();
+
+//            controller1.openLogin();
+
 //            client.listenToServer();
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);

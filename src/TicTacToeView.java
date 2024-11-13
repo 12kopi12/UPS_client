@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 /**
  * Class for graphical user interface of Tic-tac-toe game.
@@ -49,25 +50,20 @@ public class TicTacToeView extends JFrame {
         this.controller = controller;
         setTitle("Tic-tac-toe");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        setLayout(new BorderLayout());
         setSize(800, 800);
-        setLayout(new GridLayout(Constants.TIC_TAC_TOE_SIZE, Constants.TIC_TAC_TOE_SIZE));  // Mřížka 5x5 pro herní desku
 
-//        showLogin();  // Vytvoření tlačítek na hrací ploše
-
-        setVisible(true);  // Zviditelnění okna
+        setVisible(true);
     }
 
-    public JPanel getGamePanel() {
-        return gamePanel;
-    }
-
-    public JPanel getLoginPanel() {
-        return loginPanel;
-    }
-
-    public JPanel getWaitingPanel() {
-        return waitingPanel;
+    @Override
+    protected void processWindowEvent(WindowEvent e) {
+        if (e.getID() == WindowEvent.WINDOW_CLOSING) {
+            if (controller.getServerClient() != null) {
+                controller.sendLogout();
+            }
+        }
+        super.processWindowEvent(e);
     }
 
     /**
@@ -76,9 +72,15 @@ public class TicTacToeView extends JFrame {
     public void initializeBoard() {
         if (waitingPanel != null) {
             remove(waitingPanel);
-            waitingPanel = null;
+//            waitingPanel = null;
         }
-        setLayout(new BorderLayout());
+        if (loginPanel != null) {
+            remove(loginPanel);
+//            loginPanel = null;
+        }
+//        revalidate();
+//        repaint();
+//        setLayout(new BorderLayout());
 
         updateHeader();
 
@@ -97,7 +99,7 @@ public class TicTacToeView extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
 //                        controller.setLastMove(controller.getModel().getMyPlayer(), x, y);
-                        controller.sentPlayerMove(x, y);
+                        controller.sendPlayerMove(x, y);
                         buttonClicked = true;
                     }
                 });
@@ -124,8 +126,8 @@ public class TicTacToeView extends JFrame {
     public void resetBoard() {
         for (int i = 0; i < buttons.length; i++) {
             for (int j = 0; j < buttons[i].length; j++) {
-                buttons[i][j].setText(" ");  // Vymazání textu (X nebo O)
-                buttons[i][j].setEnabled(true);  // Opětovné povolení tlačítka
+                buttons[i][j].setText(" ");
+                buttons[i][j].setEnabled(true);
             }
         }
         repaint();
@@ -133,6 +135,7 @@ public class TicTacToeView extends JFrame {
 
     /**
      * Sets the controller for the game.
+     *
      * @param controller The controller for the game.
      */
     public void setController(TicTacToeController controller) {
@@ -143,39 +146,62 @@ public class TicTacToeView extends JFrame {
      * Shows the login form.
      */
     public void showLoginPanel() {
-        loginPanel = new JPanel();
-        loginPanel.setLayout(new GridLayout(4, 2, 10, 10));  // Mřížka 4x2 pro formulář přihlášení
+        loginPanel = new JPanel(new BorderLayout());
+//        loginPanel = new JPanel();
 
-        // Formulářová pole
-        loginPanel.add(new JLabel("Name:"));
+        // JPanel for login form
+        JPanel logForm = new JPanel();
+        int width = (int) (getWidth() * 0.25);
+        int height = (int) (getHeight() * 0.33);
+
+        // set layout for login form
+        logForm.setLayout(new GridLayout(3, 2, 10, 20));
+        logForm.setBorder(BorderFactory.createEmptyBorder(height, width, height, width));
+
+        // Form fields
+        logForm.add(new JLabel("Name:"));
         nameField = new JTextField("Eliska");
-        loginPanel.add(nameField);
+        logForm.add(nameField);
 
-        loginPanel.add(new JLabel("Server Address:"));
+        logForm.add(new JLabel("Server Address:"));
         serverField = new JTextField("localhost");
-        loginPanel.add(serverField);
+        logForm.add(serverField);
 
-        loginPanel.add(new JLabel("Port:"));
+        logForm.add(new JLabel("Port:"));
         portField = new JTextField("10000");
-        loginPanel.add(portField);
+        logForm.add(portField);
+
+        // JPanel for button
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Centrovaný layout pro tlačítko
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
 
         JButton connectButton = new JButton("Connect");
-        connectButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (validateLogin()) {
-                    try {
-                        controller.setServerClient(new ServerClient(serverField.getText(), Integer.parseInt(portField.getText()), controller));
-                        controller.sentLogin(nameField.getText());
-                    } catch (Exception ex) {
-                        showInfoMessage("Error: connecting to server failed - try again (check IP address and port)");
-                    }
+        connectButton.addActionListener(e -> {
+//            loginPanel.revalidate();
+//            loginPanel.repaint();
+            nameField.setText(nameField.getText().trim());
+            portField.setText(portField.getText().trim());
+            serverField.setText(serverField.getText().trim());
+            if (validateLogin()) {
+                try {
+                    controller.setServerClient(new ServerClient(serverField.getText(), Integer.parseInt(portField.getText()), controller));
+                    controller.sendLogin(nameField.getText());
+                    controller.sendWantGame();
+                } catch (Exception ex) {
+                    showInfoMessage("Error: connecting to server failed - try again (check IP address and port)");
                 }
             }
         });
 
-        loginPanel.add(connectButton);
+        buttonPanel.add(connectButton);
+
+        loginPanel.add(logForm, BorderLayout.CENTER);
+        loginPanel.add(buttonPanel, BorderLayout.SOUTH);
+
         add(loginPanel, BorderLayout.CENTER);
+//        revalidate();
+//        repaint();
         setVisible(true);
     }
 
@@ -183,23 +209,51 @@ public class TicTacToeView extends JFrame {
      * Shows the waiting panel.
      */
     public void showWaitingPanel() {
+        System.err.println("Waiting panel printing");
         if (loginPanel != null) {
             remove(loginPanel);
+//            loginPanel = null;
         }
-        setLayout(new BorderLayout());
+        if (gamePanel != null) {
+            remove(gamePanel);
+//            gamePanel = null;
+        }
+        if (headerPanel != null) {
+            remove(headerPanel);
+//            headerPanel = null;
+        }
+//        revalidate();
+//        repaint();
+//        setLayout(new BorderLayout());
 
         waitingPanel = new JPanel(new BorderLayout());
-        waitingPanel.add(new JLabel("Waiting for the opponent...", SwingConstants.CENTER), BorderLayout.CENTER);
+//        waitingPanel = new JPanel();
+        waitingPanel.add(new JLabel("<html><span style='font-size:20px'>Waiting for the opponent...</span></html>", SwingConstants.CENTER), BorderLayout.CENTER);
         add(waitingPanel, BorderLayout.CENTER);
+        waitingPanel.repaint();
+
+//        revalidate();
+//        repaint();
         setVisible(true);
     }
 
     /**
      * Shows the result of the game.
+     *
      * @param result The result of the game.
      */
     public void showGameResult(String result) {
-        JOptionPane.showMessageDialog(gamePanel, result, "GAME RESULT", JOptionPane.INFORMATION_MESSAGE);
+        int response = JOptionPane.showOptionDialog(gamePanel, result, "GAME RESULT", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"New Game", "Quit Game"}, "New Game");
+        if (response == 0) {
+            controller.sendWantGame();
+            showWaitingPanel();
+        } else {
+            controller.sendLogout();
+            System.exit(0);
+        }
+//        JOptionPane.showMessageDialog(gamePanel, result, "GAME RESULT", JOptionPane.INFORMATION_MESSAGE);
+
+        gamePanel.revalidate();
         gamePanel.repaint();
     }
 
@@ -215,7 +269,8 @@ public class TicTacToeView extends JFrame {
 
     /**
      * Updates the game board with the player's move according to the model.
-     * @param model The model of the game.
+     *
+     * @param model       The model of the game.
      * @param isClickable True if the button is clickable, false otherwise.
      */
     public void updateBoard(TicTacToeModel model, boolean isClickable) {
@@ -235,7 +290,10 @@ public class TicTacToeView extends JFrame {
     public void updateHeader() {
         if (headerPanel != null) {
             remove(headerPanel);
+            headerPanel = null;
         }
+//        revalidate();
+//        repaint();
 
         headerPanel = new JPanel(new GridLayout(2, 3));
 
@@ -265,6 +323,8 @@ public class TicTacToeView extends JFrame {
         headerPanel.add(player2);
 
         add(headerPanel, BorderLayout.NORTH);
+        headerPanel.revalidate();
+        headerPanel.repaint();
         setVisible(true);
     }
 //        char[][] board = model.getBoard();

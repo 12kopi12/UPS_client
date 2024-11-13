@@ -53,6 +53,16 @@ public class ServerClient {
         out.println("LOGIN;" + name + "\n");
     }
 
+    public void sendWantGame() {
+        System.out.println("Sending: WANT_GAME\n");
+        out.println("WANT_GAME;\n");
+    }
+
+    public void sendLogout() {
+        System.out.println("Sending: LOGOUT\n");
+        out.println("LOGOUT;\n");
+    }
+
     // Poslouchání zpráv od serveru
     public void listenToServer() {
 //        System.out.println("cekam na server...");
@@ -79,26 +89,39 @@ public class ServerClient {
         switch (parts[0]) {
             case "GAME_STATUS": {
                 System.out.println("Prijato: GAME_STATUS");
-                SwingUtilities.invokeLater(() -> {
+//                SwingUtilities.invokeLater(() -> {
                     if (parts[1].equals(Constants.GAME_STATUS_DRAW)) {
                         controller.showResult("DRAW");
                     } else {
                         controller.showResult(parts[1].equals(controller.getModel().getMyPlayer().getName()) ? "YOU WIN!!!" : "YOU LOSE...");
                     }
-                });
+//                });
                 break;
             }
             case "LOGIN": {
                 System.out.println("Prijato: LOGIN_OK");
-                controller.getModel().setMyPlayer(new Player(parts[1], parts[2].charAt(0)));
-                controller.openWaiting();
+//                controller.getModel().setMyPlayer(new Player(parts[1], parts[2].charAt(0)));
+//                SwingUtilities.invokeLater(() ->
+                        controller.getModel().setMyPlayer(new Player(parts[1]));
+//                );
+//                controller.openWaiting();
+                break;
+            }
+            case "WANT_GAME": {
+                System.out.println("Prijato: WANT_GAME");
+//                SwingUtilities.invokeLater(() -> {
+                    controller.getModel().getMyPlayer().setPlayerChar(parts[1].charAt(0));
+                    controller.openWaiting();
+//                });
                 break;
             }
             case "START_GAME": {
                 System.out.println("Prijato: GAME_STARTED");
-                controller.getModel().setOpponentPlayer(parts[1], parts[2].charAt(0));
-                controller.setMyTurn(parts[3].charAt(0) == '1');
-                controller.newGame();
+//                SwingUtilities.invokeLater(() -> {
+                    controller.getModel().setOpponentPlayer(parts[1], parts[2].charAt(0));
+                    controller.setMyTurn(parts[3].charAt(0) == '1');
+                    controller.newGame();
+//                });
                 break;
             }
             case "MOVE": {
@@ -107,24 +130,24 @@ public class ServerClient {
                 if (Constants.MOVE_BAD_STATUS.contains(status)) {
                     System.out.println("Neplatny tah: " + status);
                     return;
-                } else {
+                }
+//                SwingUtilities.invokeLater(() -> {
+//                } else {
                     controller.setMyTurn(false);
                     controller.updateBoard(Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), controller.getModel().getMyPlayer());
                     controller.updateHeader();
-                }
+//                });
                 break;
             }
             case "OPP_MOVE": {
                 int x = Integer.parseInt(parts[1]);
                 int y = Integer.parseInt(parts[2]);
-                controller.setMyTurn(true);
-                controller.updateBoard(x, y, controller.getModel().getOpponentPlayer());
-                controller.updateHeader();
-                controller.myTurn();
-                break;
-            }
-            case "WIN": {
-                controller.endGame(parts[1]);
+//                SwingUtilities.invokeLater(() -> {
+                    controller.setMyTurn(true);
+                    controller.updateBoard(x, y, controller.getModel().getOpponentPlayer());
+                    controller.updateHeader();
+//                    controller.myTurn();
+//                });
                 break;
             }
             default: {

@@ -1,7 +1,7 @@
 /**
  * Controller for TicTacToe game (MVC pattern).
  */
-public class TicTacToeController {
+public class TicTacToeController implements Runnable{
     /** The model of the game. */
     private final TicTacToeModel model;
 
@@ -19,6 +19,7 @@ public class TicTacToeController {
 
     private boolean myTurn = false;
 
+    public Thread controllerThread;
     /**
      * Class constructor
      */
@@ -30,7 +31,8 @@ public class TicTacToeController {
         // todo konec komentu
         this.view = new TicTacToeView(this);
         view.setController(this);
-
+        controllerThread = new Thread(this);
+        controllerThread.start();
     }
 
     public void setMyTurn(boolean myTurn) {
@@ -45,6 +47,9 @@ public class TicTacToeController {
         return myTurn;
     }
 
+    public ServerClient getServerClient() {
+        return serverClient;
+    }
 //    public void updateBoard(){
 //        model.updateBoard(lastMove.getX(),lastMove.getY(), lastMove.getLastPlayer());
 //        view.updateBoard(model, myTurn);
@@ -74,7 +79,7 @@ public class TicTacToeController {
 
     public void openLogin() {
         view.showLoginPanel();
-        while(model.getMyPlayer() == null || model.getMyPlayer().equals(null)) {
+        while(model.getMyPlayer() == null) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -103,7 +108,7 @@ public class TicTacToeController {
         view.buttonClicked = false;
     }
 
-    public void sentPlayerMove(int x, int y) {
+    public void sendPlayerMove(int x, int y) {
 //        if (model.getCell(x, y) == ' ' && !model.isGameOver()) {
             // Odeslání tahu na server
             serverClient.sendMove(x, y);
@@ -111,8 +116,16 @@ public class TicTacToeController {
 //        }
     }
 
-    public void sentLogin(String playerName) {
+    public void sendLogin(String playerName) {
         serverClient.sendLogin(playerName);
+    }
+
+    public void sendLogout() {
+        serverClient.sendLogout();
+    }
+
+    public void sendWantGame() {
+        serverClient.sendWantGame();
     }
 
     public void showResult(String result) {
@@ -147,6 +160,11 @@ public class TicTacToeController {
 
     public void showErrorMessage(String message) {
         view.showErrorMessage(message);
+    }
+
+    @Override
+    public void run() {
+        openLogin();
     }
 
 //    public void setMyPlayer(Player player) {
