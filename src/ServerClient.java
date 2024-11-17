@@ -43,26 +43,56 @@ public class ServerClient {
 
     // Odeslání tahu na server
     public void sendMove(int x, int y) {
+        if (out.checkError()) {
+            System.err.println("Error: Connection is not active");
+            controller.showErrorMessage("Connection is not active");
+            System.exit(0);
+        }
         System.out.println("Sending: MOVE;" + x + ";" + y + "\n");
         out.println("MOVE;" + x + ";" + y + "\n");
     }
 
     public void sendLogin(String name) {
+        if (out.checkError()) {
+            System.err.println("Error: Connection is not active");
+            controller.showErrorMessage("Connection is not active");
+            System.exit(0);
+        }
         System.out.println("LOGIN len = " + name.length());
         System.out.println("Sending: LOGIN;" + name + "\n");
         out.println("LOGIN;" + name + "\n");
     }
+    public void sendOppDiscResponse(String response) {
+        if (out.checkError()) {
+            System.err.println("Error: Connection is not active");
+            controller.showErrorMessage("Connection is not active");
+            System.exit(0);
+        }
+        System.out.println("Sending: OPP_DISCONNECTED;" + response + "\n");
+        out.println("OPP_DISCONNECTED;" + response + "\n");
+    }
 
     public void sendWantGame() {
+        if (out.checkError()) {
+            System.err.println("Error: Connection is not active");
+            controller.showErrorMessage("Connection is not active");
+            System.exit(0);
+            return;
+        }
         System.out.println("Sending: WANT_GAME\n");
         out.println("WANT_GAME;\n");
     }
 
     public void sendLogout() {
+        if (out.checkError()) {
+            System.err.println("Error: Connection is not active");
+            controller.showErrorMessage("Connection is not active");
+            System.exit(0);
+        }
         System.out.println("Sending: LOGOUT\n");
         out.println("LOGOUT;\n");
     }
-
+// todo pridat kontrolu i pro pong
     // Poslouchání zpráv od serveru
     public void listenToServer() {
 //        System.out.println("cekam na server...");
@@ -79,7 +109,9 @@ public class ServerClient {
                 considerResponse(response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error: Connection is not active (listenToServer)");
+            controller.showErrorMessage("Connection is not active");
+            System.exit(0);
         }
     }
 
@@ -92,6 +124,8 @@ public class ServerClient {
 //                SwingUtilities.invokeLater(() -> {
                     if (parts[1].equals(Constants.GAME_STATUS_DRAW)) {
                         controller.showResult("DRAW");
+                    } else if (parts[1].equals(Constants.GAME_STATUS_OPP_END)) {
+                        controller.showResult("OPPONENT DID NOT WANT TO WAIT FOR YOU");
                     } else {
                         controller.showResult(parts[1].equals(controller.getModel().getMyPlayer().getName()) ? "YOU WIN!!!" : "YOU LOSE...");
                     }
@@ -148,6 +182,27 @@ public class ServerClient {
                     controller.updateHeader();
 //                    controller.myTurn();
 //                });
+                break;
+            }
+            case "PING": {
+                System.out.println("Prijato: PING");
+                System.out.println("Sending: PONG;");
+                out.println("PONG;\n");
+                break;
+            }
+            case "OPP_DISCONNECTED": {
+                System.out.println("Prijato: OPP_DISCONNECTED");
+                controller.setMyTurn(false);
+                controller.repaintBoard();
+                controller.showOpponentDisconnected();
+                break;
+            }
+            case "RECONNECT": {
+                System.out.println("Prijato: RECONNECT");
+                controller.setMyTurn(parts[2].equals(controller.getModel().getMyPlayer().getName()));
+                controller.getModel().updateBoard(parts[1]);
+                controller.repaintBoard();
+                controller.updateHeader();
                 break;
             }
             default: {

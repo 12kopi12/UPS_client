@@ -115,6 +115,9 @@ public class TicTacToeController implements Runnable{
 //            serverClient.listenToServer();
 //        }
     }
+    public void sendOppDiscResponse(String response) {
+        serverClient.sendOppDiscResponse(response);
+    }
 
     public void sendLogin(String playerName) {
         serverClient.sendLogin(playerName);
@@ -132,6 +135,10 @@ public class TicTacToeController implements Runnable{
         view.showGameResult(result);
     }
 
+    public void showOpponentDisconnected() {
+        view.showOpponentDisconnected();
+    }
+
     /**
      * Updates the game board with the player's move.
      * @param x The x-coordinate of the move.
@@ -141,6 +148,10 @@ public class TicTacToeController implements Runnable{
     public void updateBoard(int x, int y, Player player) {
 //        char playerChar = playerName.equals(model.getMyPlayer().getName()) ? TicTacToeModel.MY_CHAR : TicTacToeModel.OPONENT_CHAR;
         model.updateBoard(x, y, player.getPlayerChar());
+        view.updateBoard(model, myTurn);
+    }
+
+    public void repaintBoard() {
         view.updateBoard(model, myTurn);
     }
 

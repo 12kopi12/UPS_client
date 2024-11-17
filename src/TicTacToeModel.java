@@ -53,6 +53,18 @@ public class TicTacToeModel {
     }
 
     /**
+     * Updates the game board with the response from the server.
+     * @param response The response from the server. (e.g. "XOXOXOXO O X")
+     */
+    public void updateBoard(String response) {
+        for (int i = 0; i < Constants.TIC_TAC_TOE_SIZE; i++) {
+            for (int j = 0; j < Constants.TIC_TAC_TOE_SIZE; j++) {
+                board[i][j] = response.charAt(i * Constants.TIC_TAC_TOE_SIZE + j);
+            }
+        }
+    }
+
+    /**
      * Updates the game board with the player's move.
      * @param x The x-coordinate of the move.
      * @param y The y-coordinate of the move.

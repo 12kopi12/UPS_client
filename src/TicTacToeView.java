@@ -246,7 +246,7 @@ public class TicTacToeView extends JFrame {
         int response = JOptionPane.showOptionDialog(gamePanel, result, "GAME RESULT", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"New Game", "Quit Game"}, "New Game");
         if (response == 0) {
             controller.sendWantGame();
-            showWaitingPanel();
+//            showWaitingPanel();
         } else {
             controller.sendLogout();
             System.exit(0);
@@ -255,6 +255,18 @@ public class TicTacToeView extends JFrame {
 
         gamePanel.revalidate();
         gamePanel.repaint();
+    }
+
+    /**
+     * Shows the Option dialog for message that the opponent has disconnected.
+     */
+    public void showOpponentDisconnected() {
+        int response = JOptionPane.showOptionDialog(gamePanel, "Do you want to wait for opponent?", "Opponent disconnected", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Yes", "No"}, "Yes");
+        if (response == 0) {
+            controller.sendOppDiscResponse("WAIT");
+        } else {
+            controller.sendOppDiscResponse("NOT_WAIT");
+        }
     }
 
     public void showErrorMessage(String message) {
