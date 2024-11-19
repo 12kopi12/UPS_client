@@ -24,6 +24,10 @@
         </jar>
     </target>
 
+    <target name="run" depends="jar">
+        <java jar="${dist.dir}/TicTacToe.jar" fork="true"/>
+    </target>
+
     <!-- Vyčištění projektu -->
     <target name="clean">
         <delete dir="${build.dir}"/>
