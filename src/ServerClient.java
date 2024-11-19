@@ -201,6 +201,7 @@ public class ServerClient {
                 System.out.println("Prijato: RECONNECT");
                 controller.setMyTurn(parts[2].equals(controller.getModel().getMyPlayer().getName()));
                 controller.getModel().updateBoard(parts[1]);
+                controller.getModel().setOpponentPlayer(parts[3], parts[4].charAt(0));
                 controller.repaintBoard();
                 controller.updateHeader();
                 break;
