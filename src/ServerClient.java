@@ -129,6 +129,7 @@ public class ServerClient {
 
     private void monitorConnection() {
         while (true) {
+            System.out.println(System.currentTimeMillis()-this.lastPing);
             if (System.currentTimeMillis() - this.lastPing > Constants.TIMEOUT && this.needConnectionMessage) {
                 System.err.println("Error: Connection is not active (monitorConnection)");
                 this.needConnectionMessage = false;
@@ -155,11 +156,11 @@ public class ServerClient {
                 System.out.println("Prijato: GAME_STATUS");
 //                SwingUtilities.invokeLater(() -> {
                 if (parts[1].equals(Constants.GAME_STATUS_DRAW)) {
-                    controller.showResult("DRAW");
+                    new Thread(() -> controller.showResult("DRAW")).start();
                 } else if (parts[1].equals(Constants.GAME_STATUS_OPP_END)) {
-                    controller.showResult("OPPONENT DID NOT WANT TO WAIT FOR YOU");
+                    new Thread(() -> controller.showResult("OPPONENT DID NOT WANT TO WAIT FOR YOU")).start();
                 } else {
-                    controller.showResult(parts[1].equals(controller.getModel().getMyPlayer().getName()) ? "YOU WIN!!!" : "YOU LOSE...");
+                    new Thread(() -> controller.showResult(parts[1].equals(controller.getModel().getMyPlayer().getName()) ? "YOU WIN!!!" : "YOU LOSE...")).start();
                 }
 //                });
                 break;
@@ -230,7 +231,8 @@ public class ServerClient {
                 System.out.println("Prijato: OPP_DISCONNECTED");
                 controller.setMyTurn(false);
                 controller.repaintBoard();
-                controller.showOpponentDisconnected();
+//                controller.showOpponentDisconnected();
+                new Thread(() -> controller.showOpponentDisconnected()).start();
                 break;
             }
             case "RECONNECT": {
