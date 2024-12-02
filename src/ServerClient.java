@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.io.*;
 import java.net.*;
 
+import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
 public class ServerClient {
@@ -137,6 +138,11 @@ public class ServerClient {
             if (System.currentTimeMillis() - this.lastPing > Constants.ZOMBIE_TIMEOUT) {
                 System.err.println("Error: Connection is not active - zombie time reached (monitorConnection)");
                 controller.showErrorMessage("Connection is not active");
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
