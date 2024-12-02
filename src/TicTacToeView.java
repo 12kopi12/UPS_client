@@ -160,7 +160,7 @@ public class TicTacToeView extends JFrame {
 
         // Form fields
         logForm.add(new JLabel("Name:"));
-        nameField = new JTextField("Eliska");
+        nameField = new JTextField("Player");
         logForm.add(nameField);
 
         logForm.add(new JLabel("Server Address:"));
@@ -266,6 +266,16 @@ public class TicTacToeView extends JFrame {
             controller.sendOppDiscResponse("WAIT");
         } else {
             controller.sendOppDiscResponse("NOT_WAIT");
+        }
+    }
+
+    /**
+     * Shows the Option dialog in case of connection error.
+     */
+    public void showConnectionError() {
+        int response = JOptionPane.showOptionDialog(gamePanel, "Do you want to try to reconnect?", "Connection error", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Yes", "No"}, "Yes");
+        if (response == 1) {
+            System.exit(0);
         }
     }
 

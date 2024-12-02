@@ -2,11 +2,15 @@ import javax.swing.*;
 import java.io.*;
 import java.net.*;
 
+import static java.lang.Thread.sleep;
+
 public class ServerClient {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
     private TicTacToeController controller;
+
+    private long lastPing = System.currentTimeMillis();
 
     public ServerClient(String serverAddress, int port, TicTacToeController controller) throws IOException {
         try {
@@ -30,6 +34,7 @@ public class ServerClient {
 //            }
 
             new Thread(this::listenToServer).start();
+            new Thread(this::monitorConnection).start();
         } catch (IOException e) {
             System.err.println("Error: connecting to server");
             throw e;
@@ -115,6 +120,15 @@ public class ServerClient {
         }
     }
 
+    private void monitorConnection() {
+        while (true) {
+            if (System.currentTimeMillis() - this.lastPing > 10000) {
+                System.err.println("Error: Connection is not active (monitorConnection)");
+                controller.showConnectionError();
+            }
+        }
+    }
+
     private void considerResponse(String response) {
         System.out.println("Prijato: " + response);
         String[] parts = response.split(";");
@@ -187,6 +201,9 @@ public class ServerClient {
             case "PING": {
                 System.out.println("Prijato: PING");
                 System.out.println("Sending: PONG;");
+
+                this.lastPing = System.currentTimeMillis();
+
                 out.println("PONG;\n");
                 break;
             }

@@ -139,6 +139,10 @@ public class TicTacToeController implements Runnable{
         view.showOpponentDisconnected();
     }
 
+    public void showConnectionError() {
+        view.showConnectionError();
+    }
+
     /**
      * Updates the game board with the player's move.
      * @param x The x-coordinate of the move.

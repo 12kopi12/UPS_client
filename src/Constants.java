@@ -9,6 +9,10 @@ public class Constants {
     public static final int FIELD_TAKEN = 8;
     public static Set<Integer> MOVE_BAD_STATUS = Set.of(GAME_NOT_FOUND, NOT_MY_TURN, INVALID_MOVE, FIELD_TAKEN);
 
+    public static final long TIMEOUT = 3500;
+
+    public static final long ZOMBIE_TIMEOUT = 20000;
+
     public static final String GAME_STATUS_DRAW = "DRAW";
     public static final String GAME_STATUS_OPP_END = "OPP_DISCONNECTED";
 }
