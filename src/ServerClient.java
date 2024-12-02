@@ -10,7 +10,7 @@ public class ServerClient {
     private PrintWriter out;
     private TicTacToeController controller;
 
-    private long lastPing = System.currentTimeMillis();
+    private long lastPing;
 
     private boolean needConnectionMessage = true;
 
@@ -20,6 +20,8 @@ public class ServerClient {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
             this.controller = controller;
+
+            this.lastPing = System.currentTimeMillis();
 
 //        out.println("LOGIN;Myname              \n");
 //            out.println("TIC-TAC-TOE;INIT\n");
