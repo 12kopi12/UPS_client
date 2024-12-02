@@ -12,6 +12,8 @@ public class ServerClient {
 
     private long lastPing = System.currentTimeMillis();
 
+    private boolean needConnectionMessage = true;
+
     public ServerClient(String serverAddress, int port, TicTacToeController controller) throws IOException {
         try {
             socket = new Socket(serverAddress, port);
@@ -67,6 +69,7 @@ public class ServerClient {
         System.out.println("Sending: LOGIN;" + name + "\n");
         out.println("LOGIN;" + name + "\n");
     }
+
     public void sendOppDiscResponse(String response) {
         if (out.checkError()) {
             System.err.println("Error: Connection is not active");
@@ -97,7 +100,8 @@ public class ServerClient {
         System.out.println("Sending: LOGOUT\n");
         out.println("LOGOUT;\n");
     }
-// todo pridat kontrolu i pro pong
+
+    // todo pridat kontrolu i pro pong
     // Poslouchání zpráv od serveru
     public void listenToServer() {
 //        System.out.println("cekam na server...");
@@ -122,8 +126,9 @@ public class ServerClient {
 
     private void monitorConnection() {
         while (true) {
-            if (System.currentTimeMillis() - this.lastPing > 10000) {
+            if (System.currentTimeMillis() - this.lastPing > Constants.TIMEOUT && this.needConnectionMessage) {
                 System.err.println("Error: Connection is not active (monitorConnection)");
+                this.needConnectionMessage = false;
                 controller.showConnectionError();
             }
         }
@@ -136,13 +141,13 @@ public class ServerClient {
             case "GAME_STATUS": {
                 System.out.println("Prijato: GAME_STATUS");
 //                SwingUtilities.invokeLater(() -> {
-                    if (parts[1].equals(Constants.GAME_STATUS_DRAW)) {
-                        controller.showResult("DRAW");
-                    } else if (parts[1].equals(Constants.GAME_STATUS_OPP_END)) {
-                        controller.showResult("OPPONENT DID NOT WANT TO WAIT FOR YOU");
-                    } else {
-                        controller.showResult(parts[1].equals(controller.getModel().getMyPlayer().getName()) ? "YOU WIN!!!" : "YOU LOSE...");
-                    }
+                if (parts[1].equals(Constants.GAME_STATUS_DRAW)) {
+                    controller.showResult("DRAW");
+                } else if (parts[1].equals(Constants.GAME_STATUS_OPP_END)) {
+                    controller.showResult("OPPONENT DID NOT WANT TO WAIT FOR YOU");
+                } else {
+                    controller.showResult(parts[1].equals(controller.getModel().getMyPlayer().getName()) ? "YOU WIN!!!" : "YOU LOSE...");
+                }
 //                });
                 break;
             }
@@ -150,7 +155,7 @@ public class ServerClient {
                 System.out.println("Prijato: LOGIN_OK");
 //                controller.getModel().setMyPlayer(new Player(parts[1], parts[2].charAt(0)));
 //                SwingUtilities.invokeLater(() ->
-                        controller.getModel().setMyPlayer(new Player(parts[1]));
+                controller.getModel().setMyPlayer(new Player(parts[1]));
 //                );
 //                controller.openWaiting();
                 break;
@@ -158,17 +163,17 @@ public class ServerClient {
             case "WANT_GAME": {
                 System.out.println("Prijato: WANT_GAME");
 //                SwingUtilities.invokeLater(() -> {
-                    controller.getModel().getMyPlayer().setPlayerChar(parts[1].charAt(0));
-                    controller.openWaiting();
+                controller.getModel().getMyPlayer().setPlayerChar(parts[1].charAt(0));
+                controller.openWaiting();
 //                });
                 break;
             }
             case "START_GAME": {
                 System.out.println("Prijato: GAME_STARTED");
 //                SwingUtilities.invokeLater(() -> {
-                    controller.getModel().setOpponentPlayer(parts[1], parts[2].charAt(0));
-                    controller.setMyTurn(parts[3].charAt(0) == '1');
-                    controller.newGame();
+                controller.getModel().setOpponentPlayer(parts[1], parts[2].charAt(0));
+                controller.setMyTurn(parts[3].charAt(0) == '1');
+                controller.newGame();
 //                });
                 break;
             }
@@ -181,9 +186,9 @@ public class ServerClient {
                 }
 //                SwingUtilities.invokeLater(() -> {
 //                } else {
-                    controller.setMyTurn(false);
-                    controller.updateBoard(Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), controller.getModel().getMyPlayer());
-                    controller.updateHeader();
+                controller.setMyTurn(false);
+                controller.updateBoard(Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), controller.getModel().getMyPlayer());
+                controller.updateHeader();
 //                });
                 break;
             }
@@ -191,9 +196,9 @@ public class ServerClient {
                 int x = Integer.parseInt(parts[1]);
                 int y = Integer.parseInt(parts[2]);
 //                SwingUtilities.invokeLater(() -> {
-                    controller.setMyTurn(true);
-                    controller.updateBoard(x, y, controller.getModel().getOpponentPlayer());
-                    controller.updateHeader();
+                controller.setMyTurn(true);
+                controller.updateBoard(x, y, controller.getModel().getOpponentPlayer());
+                controller.updateHeader();
 //                    controller.myTurn();
 //                });
                 break;
@@ -203,6 +208,7 @@ public class ServerClient {
                 System.out.println("Sending: PONG;");
 
                 this.lastPing = System.currentTimeMillis();
+                this.needConnectionMessage = true;
 
                 out.println("PONG;\n");
                 break;
