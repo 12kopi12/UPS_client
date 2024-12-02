@@ -131,6 +131,11 @@ public class ServerClient {
                 this.needConnectionMessage = false;
                 controller.showConnectionError();
             }
+
+            if (System.currentTimeMillis() - this.lastPing > Constants.ZOMBIE_TIMEOUT) {
+                System.err.println("Error: Connection is not active - zombie time reached (monitorConnection)");
+                controller.showErrorMessage("Connection is not active");
+            }
         }
     }
 
