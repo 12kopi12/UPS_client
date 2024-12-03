@@ -209,31 +209,21 @@ public class TicTacToeView extends JFrame {
      * Shows the waiting panel.
      */
     public void showWaitingPanel() {
-        System.err.println("Waiting panel printing");
         if (loginPanel != null) {
             remove(loginPanel);
-//            loginPanel = null;
         }
         if (gamePanel != null) {
             remove(gamePanel);
-//            gamePanel = null;
         }
         if (headerPanel != null) {
             remove(headerPanel);
-//            headerPanel = null;
         }
-//        revalidate();
-//        repaint();
-//        setLayout(new BorderLayout());
 
         waitingPanel = new JPanel(new BorderLayout());
-//        waitingPanel = new JPanel();
         waitingPanel.add(new JLabel("<html><span style='font-size:20px'>Waiting for the opponent...</span></html>", SwingConstants.CENTER), BorderLayout.CENTER);
         add(waitingPanel, BorderLayout.CENTER);
         waitingPanel.repaint();
 
-//        revalidate();
-//        repaint();
         setVisible(true);
     }
 
@@ -246,12 +236,10 @@ public class TicTacToeView extends JFrame {
         int response = JOptionPane.showOptionDialog(gamePanel, result, "GAME RESULT", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"New Game", "Quit Game"}, "New Game");
         if (response == 0) {
             controller.sendWantGame();
-//            showWaitingPanel();
         } else {
             controller.sendLogout();
             System.exit(0);
         }
-//        JOptionPane.showMessageDialog(gamePanel, result, "GAME RESULT", JOptionPane.INFORMATION_MESSAGE);
 
         gamePanel.revalidate();
         gamePanel.repaint();
@@ -314,8 +302,6 @@ public class TicTacToeView extends JFrame {
             remove(headerPanel);
             headerPanel = null;
         }
-//        revalidate();
-//        repaint();
 
         headerPanel = new JPanel(new GridLayout(2, 3));
 
@@ -349,25 +335,6 @@ public class TicTacToeView extends JFrame {
         headerPanel.repaint();
         setVisible(true);
     }
-//        char[][] board = model.getBoard();
-//        for (int i = 0; i < buttons.length; i++) {
-//            for (int j = 0; j < buttons[i].length; j++) {
-//                if (board[i][j] != ' ') {
-////                    buttons[i][j].remove(j);
-//                    buttons[i][j] = new JButton("" + board[i][j]);
-//                    System.out.println("Nasel jsem tlacitko: " + board[i][j]);
-////                    buttons[i][j].setText(String.valueOf(board[i][j]));
-////                    buttons[i][j].;
-//                    System.out.println("TLACITKO TEXT: " + buttons[i][j].getText());
-//                    buttons[i][j].setEnabled(false);
-////                    buttons[i][j].repaint();
-//                }
-//            }
-//        }
-//        gamePanel.updateUI();
-//        buttons[x][y].setText(String.valueOf(player));  // Nastaví symbol hráče (X nebo O)
-//        buttons[x][y].setEnabled(false);  // Deaktivuje tlačítko po provedení tahu
-//    }
 
     /**
      * Handles the login of the player.
@@ -396,19 +363,7 @@ public class TicTacToeView extends JFrame {
 
         while (nameField.getText().length() < Constants.PLAYER_NAME_LENGTH) {
             nameField.setText(nameField.getText() + " ");
-            System.out.println("Doplnuji mezery");
         }
-//        controller.getModel().setMyPlayer(new Player(name, serverAddress, Integer.parseInt(port)));
         return true;
     }
-
-//    public static void main(String[] args) {
-//        // Pouze pro účely testování UI bez napojení na controller
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                new TicTacToeView();
-//            }
-//        });
-//    }
 }

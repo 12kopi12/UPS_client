@@ -1,21 +1,21 @@
 <project name="TicTacToe" default="jar" basedir=".">
-    <!-- Nastavení cest -->
+    <!-- Path setting -->
     <property name="src.dir" value="src"/>
     <property name="build.dir" value="build"/>
     <property name="dist.dir" value="dist"/>
 
-    <!-- Vytvoření potřebných složek -->
+    <!-- Create storing folders -->
     <target name="init">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${dist.dir}"/>
     </target>
 
-    <!-- Kompilace Java souborů -->
+    <!-- Java files compilation -->
     <target name="compile" depends="init">
         <javac srcdir="${src.dir}" destdir="${build.dir}"/>
     </target>
 
-    <!-- Vytvoření spustitelného JAR souboru -->
+    <!-- Running JAR file -->
     <target name="jar" depends="compile">
         <jar destfile="${dist.dir}/TicTacToe.jar" basedir="${build.dir}">
             <manifest>
@@ -24,11 +24,12 @@
         </jar>
     </target>
 
+    <!-- Running project -->
     <target name="run" depends="jar">
         <java jar="${dist.dir}/TicTacToe.jar" fork="true"/>
     </target>
 
-    <!-- Vyčištění projektu -->
+    <!-- Clean project -->
     <target name="clean">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>

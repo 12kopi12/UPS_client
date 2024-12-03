@@ -27,12 +27,4 @@ public class Player {
         this.playerChar = playerChar;
     }
 
-//    public char getPlayerChar() {
-//        return this.playerChar;
-//    }
-
-//    public void setPlayerChar(char playerChar) {
-//        this.playerChar = playerChar;
-//    }
-
 }

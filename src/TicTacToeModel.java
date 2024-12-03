@@ -23,16 +23,6 @@ public class TicTacToeModel {
     private boolean gameOver;
 
     /**
-     * The character representing the player on this PC.
-     */
-    public static final char MY_CHAR = 'X';
-
-    /**
-     * The character representing the opponent player.
-     */
-    public static final char OPONENT_CHAR = 'O';
-
-    /**
      * Constructor of the TicTacToeModel class.
      */
     public TicTacToeModel() {
@@ -77,32 +67,6 @@ public class TicTacToeModel {
     }
 
     /**
-     * Returns the character at the specified position on the game board.
-     * @param x The x-coordinate of the position.
-     * @param y The y-coordinate of the position.
-     * @return The character at the specified position.
-     */
-    public char getCell(int x, int y) {
-        return board[y][x];
-    }
-
-    /**
-     * Returns the player on this PC.
-     * @return The player on this PC.
-     */
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    /**
-     * Sets the status of the game.
-     * @param gameOver The status of the game.
-     */
-    public void setGameOver(boolean gameOver) {
-        this.gameOver = gameOver;
-    }
-
-    /**
      * Sets the opponent player.
      * @param opponentName The opponent player.
      */
@@ -140,13 +104,5 @@ public class TicTacToeModel {
      */
     public char[][] getBoard() {
         return board;
-    }
-
-    /**
-     * Returns the status of the game.
-     * @return The status of the game.
-     */
-    public boolean getGameOver() {
-        return gameOver;
     }
 }
