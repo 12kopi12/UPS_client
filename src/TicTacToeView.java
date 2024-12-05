@@ -60,7 +60,9 @@ public class TicTacToeView extends JFrame {
     protected void processWindowEvent(WindowEvent e) {
         if (e.getID() == WindowEvent.WINDOW_CLOSING) {
             if (controller.getServerClient() != null) {
-                controller.sendLogout();
+                if (!wantClose()) {
+                    return;
+                }
             }
         }
         super.processWindowEvent(e);
@@ -255,6 +257,18 @@ public class TicTacToeView extends JFrame {
         } else {
             controller.sendOppDiscResponse("NOT_WAIT");
         }
+    }
+
+    /**
+     * Shows the Option dialog in case that user want to leave from existing connection
+     */
+    public boolean wantClose() {
+        int response = JOptionPane.showOptionDialog(gamePanel, "Do you really want to leave?", "", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Yes", "No"}, "No");
+        if (response == 0) {
+            controller.sendLogout();
+            return true;
+        }
+        return false;
     }
 
     /**
