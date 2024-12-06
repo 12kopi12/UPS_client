@@ -166,7 +166,7 @@ public class TicTacToeView extends JFrame {
         logForm.add(nameField);
 
         logForm.add(new JLabel("Server Address:"));
-        serverField = new JTextField("172.31.210.166");
+        serverField = new JTextField("147.228.67.105");
         logForm.add(serverField);
 
         logForm.add(new JLabel("Port:"));
