@@ -179,20 +179,41 @@ public class TicTacToeView extends JFrame {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
 
         JButton connectButton = new JButton("Connect");
+//        connectButton.addActionListener(e -> {
+////            loginPanel.revalidate();
+////            loginPanel.repaint();
+//            nameField.setText(nameField.getText().trim());
+//            portField.setText(portField.getText().trim());
+//            serverField.setText(serverField.getText().trim());
+//            if (validateLogin()) {
+//                try {
+//                    controller.setServerClient(new ServerClient(serverField.getText(), Integer.parseInt(portField.getText()), controller));
+//                    controller.sendLogin(nameField.getText());
+//                    controller.sendWantGame();
+//                } catch (Exception ex) {
+//                    showInfoMessage("Error: connecting to server failed - try again (check IP address and port)");
+//                }
+//            }
+//        });
+
         connectButton.addActionListener(e -> {
-//            loginPanel.revalidate();
-//            loginPanel.repaint();
             nameField.setText(nameField.getText().trim());
             portField.setText(portField.getText().trim());
             serverField.setText(serverField.getText().trim());
             if (validateLogin()) {
-                try {
-                    controller.setServerClient(new ServerClient(serverField.getText(), Integer.parseInt(portField.getText()), controller));
-                    controller.sendLogin(nameField.getText());
-                    controller.sendWantGame();
-                } catch (Exception ex) {
-                    showInfoMessage("Error: connecting to server failed - try again (check IP address and port)");
-                }
+                new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() {
+                        try {
+                            controller.setServerClient(new ServerClient(serverField.getText(), Integer.parseInt(portField.getText()), controller));
+                            controller.sendLogin(nameField.getText());
+                            controller.sendWantGame();
+                        } catch (Exception ex) {
+                            SwingUtilities.invokeLater(() -> showInfoMessage("Error: connecting to server failed - try again (check IP address and port)"));
+                        }
+                        return null;
+                    }
+                }.execute();
             }
         });
 
