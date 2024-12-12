@@ -74,15 +74,10 @@ public class TicTacToeView extends JFrame {
     public void initializeBoard() {
         if (waitingPanel != null) {
             remove(waitingPanel);
-//            waitingPanel = null;
         }
         if (loginPanel != null) {
             remove(loginPanel);
-//            loginPanel = null;
         }
-//        revalidate();
-//        repaint();
-//        setLayout(new BorderLayout());
 
         updateHeader();
 
@@ -100,7 +95,6 @@ public class TicTacToeView extends JFrame {
                 buttons[i][j].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-//                        controller.setLastMove(controller.getModel().getMyPlayer(), x, y);
                         controller.sendPlayerMove(x, y);
                         buttonClicked = true;
                     }
@@ -108,15 +102,6 @@ public class TicTacToeView extends JFrame {
                 gamePanel.add(buttons[i][j]);  // Add the button to the frame
             }
         }
-
-//        JButton someButton = new JButton("BAD_BUTTON");
-//        someButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                controller.sentPlayerMove(-1, -2);
-//            }
-//        });
-//        gamePanel.add(someButton);
 
         add(gamePanel, BorderLayout.CENTER);
         setVisible(true);  // Show the game board
@@ -137,7 +122,6 @@ public class TicTacToeView extends JFrame {
 
     /**
      * Sets the controller for the game.
-     *
      * @param controller The controller for the game.
      */
     public void setController(TicTacToeController controller) {
@@ -149,7 +133,6 @@ public class TicTacToeView extends JFrame {
      */
     public void showLoginPanel() {
         loginPanel = new JPanel(new BorderLayout());
-//        loginPanel = new JPanel();
 
         // JPanel for login form
         JPanel logForm = new JPanel();
@@ -179,22 +162,6 @@ public class TicTacToeView extends JFrame {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
 
         JButton connectButton = new JButton("Connect");
-//        connectButton.addActionListener(e -> {
-////            loginPanel.revalidate();
-////            loginPanel.repaint();
-//            nameField.setText(nameField.getText().trim());
-//            portField.setText(portField.getText().trim());
-//            serverField.setText(serverField.getText().trim());
-//            if (validateLogin()) {
-//                try {
-//                    controller.setServerClient(new ServerClient(serverField.getText(), Integer.parseInt(portField.getText()), controller));
-//                    controller.sendLogin(nameField.getText());
-//                    controller.sendWantGame();
-//                } catch (Exception ex) {
-//                    showInfoMessage("Error: connecting to server failed - try again (check IP address and port)");
-//                }
-//            }
-//        });
 
         connectButton.addActionListener(e -> {
             nameField.setText(nameField.getText().trim());
@@ -302,12 +269,20 @@ public class TicTacToeView extends JFrame {
         }
     }
 
+    /**
+     * Shows the error message in message dialog.
+     * @param message The message to be shown.
+     */
     public void showErrorMessage(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
         // close application
         System.exit(0);
     }
 
+    /**
+     * Shows the info message in message dialog.
+     * @param message The message to be shown.
+     */
     public void showInfoMessage(String message) {
         JOptionPane.showMessageDialog(this, message, "Info", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -332,6 +307,9 @@ public class TicTacToeView extends JFrame {
         gamePanel.repaint();
     }
 
+    /**
+     * Updates the header of the game (player names and turn)
+     */
     public void updateHeader() {
         if (headerPanel != null) {
             remove(headerPanel);

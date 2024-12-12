@@ -1,16 +1,35 @@
 import java.io.*;
 import java.net.*;
 
+/**
+ * ServerClient class for communication with the server.
+ */
 public class ServerClient {
+    /** The socket for communication with the server. */
     private Socket socket;
+
+    /** The input stream from the server. */
     private BufferedReader in;
+
+    /** The output stream to the server. */
     private PrintWriter out;
+
+    /** The controller of the game. */
     private TicTacToeController controller;
 
+    /** The last time the ping message from server was received. */
     private long lastPing;
 
+    /** Flag to check if the connection message is needed. */
     private boolean needConnectionMessage = true;
 
+    /**
+     * Class constructor.
+     * @param serverAddress The address of the server.
+     * @param port The port of the server.
+     * @param controller The controller of the game.
+     * @throws IOException If an I/O error occurs when creating the socket.
+     */
     public ServerClient(String serverAddress, int port, TicTacToeController controller) throws IOException {
         try {
             socket = new Socket(serverAddress, port);
@@ -28,10 +47,11 @@ public class ServerClient {
         }
     }
 
-    public void setController(TicTacToeController controller) {
-        this.controller = controller;
-    }
-
+    /**
+     * Sends the move to the server.
+     * @param x The x-coordinate of the move.
+     * @param y The y-coordinate of the move.
+     */
     public void sendMove(int x, int y) {
         if (out.checkError()) {
             System.err.println("Error: Connection is not active");
@@ -42,6 +62,10 @@ public class ServerClient {
         out.println("MOVE;" + x + ";" + y + "\n");
     }
 
+    /**
+     * Sends the login message to the server.
+     * @param name The name of the player.
+     */
     public void sendLogin(String name) {
         if (out.checkError()) {
             System.err.println("Error: Connection is not active");
@@ -52,6 +76,10 @@ public class ServerClient {
         out.println("LOGIN;" + name + "\n");
     }
 
+    /**
+     * Sends the opponent disconnected response to the server.
+     * @param response The response to the opponent disconnection.
+     */
     public void sendOppDiscResponse(String response) {
         if (out.checkError()) {
             System.err.println("Error: Connection is not active");
@@ -62,6 +90,9 @@ public class ServerClient {
         out.println("OPP_DISCONNECTED;" + response + "\n");
     }
 
+    /**
+     * Sends the want game message to the server.
+     */
     public void sendWantGame() {
         if (out.checkError()) {
             System.err.println("Error: Connection is not active");
@@ -73,6 +104,9 @@ public class ServerClient {
         out.println("WANT_GAME;\n");
     }
 
+    /**
+     * Sends the logout message to the server.
+     */
     public void sendLogout() {
         if (out.checkError()) {
             System.err.println("Error: Connection is not active");
@@ -83,6 +117,9 @@ public class ServerClient {
         out.println("LOGOUT;\n");
     }
 
+    /**
+     * Listens to the server and processes the messages.
+     */
     public void listenToServer() {
         String response;
         try {
@@ -96,6 +133,9 @@ public class ServerClient {
         }
     }
 
+    /**
+     * Monitors the connection with the server.
+     */
     private void monitorConnection() {
         while (true) {
             if (System.currentTimeMillis() - this.lastPing > Constants.TIMEOUT && this.needConnectionMessage) {
@@ -116,8 +156,12 @@ public class ServerClient {
         }
     }
 
-    private void considerResponse(String response) {
-        String[] parts = response.split(";");
+    /**
+     * Processes the message from the server.
+     * @param message The response from the server.
+     */
+    private void considerResponse(String message) {
+        String[] parts = message.split(";");
         switch (parts[0]) {
             case "GAME_STATUS": {
                 System.out.println("Received: GAME_STATUS");
@@ -195,18 +239,10 @@ public class ServerClient {
                 break;
             }
             default: {
-                System.out.println("Invalid server message -> close connection" + response);
+                System.out.println("Invalid server message -> close connection" + message);
                 controller.showErrorMessage("Invalid server message");
                 System.exit(0);
             }
-        }
-    }
-
-    public void close() {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
